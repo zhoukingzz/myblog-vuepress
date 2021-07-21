@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>打包 | zhoukingzzBlog</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    
+    <meta name="description" content="zhoukingzzBlog,有事没事一时兴起都会更新下">
+    
+    <link rel="preload" href="/assets/css/0.styles.c8e23b86.css" as="style"><link rel="preload" href="/assets/js/app.e4bf8a89.js" as="script"><link rel="preload" href="/assets/js/2.c68f0df1.js" as="script"><link rel="preload" href="/assets/js/11.5acdc7ca.js" as="script"><link rel="prefetch" href="/assets/js/10.1680a01d.js"><link rel="prefetch" href="/assets/js/3.6f04835d.js"><link rel="prefetch" href="/assets/js/4.e05c873c.js"><link rel="prefetch" href="/assets/js/5.f5a2b5ce.js"><link rel="prefetch" href="/assets/js/6.b00d925a.js"><link rel="prefetch" href="/assets/js/7.77a1220f.js"><link rel="prefetch" href="/assets/js/8.153aae23.js"><link rel="prefetch" href="/assets/js/9.207de6eb.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c8e23b86.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">zhoukingzzBlog</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/JS/" class="nav-link">
+  JS
+</a></div><div class="nav-item"><a href="/Vue/" class="nav-link">
+  Vue
+</a></div><div class="nav-item"><a href="/Webpack/" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Webpack
+</a></div><div class="nav-item"><a href="/React/" class="nav-link">
+  React
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/JS/" class="nav-link">
+  JS
+</a></div><div class="nav-item"><a href="/Vue/" class="nav-link">
+  Vue
+</a></div><div class="nav-item"><a href="/Webpack/" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  Webpack
+</a></div><div class="nav-item"><a href="/React/" class="nav-link">
+  React
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>项目依赖打包优化</span> <!----></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="打包"><a href="#打包" class="header-anchor">#</a> 打包</h1> <p>要想进行优化，首先我们得清楚问题所在。即：是哪些代码/依赖包导致最后的编译文件过大？</p> <ul><li><p>通过 <code>webpack-bundle-analyzer</code> 插件查看打包后各模块所占体积</p> <img src="http://travel-official-imagesrc-1258234669.cos.ap-guangzhou.myqcloud.com/upload/buildTreeOld.png" style="width:80%;"></li> <li><p>经过观察，发现XLSX和echarts这个两库在项目中占体积确实较大，并且，可以看到途中存在两个关于echarts的模块被打包进来</p></li> <li><p>那我们是不是可以通过Webpack4自带的SplitChunks把这两个模块中重复的给打包出来防止模块重复？（顺带提一下，对于webpack来说，万物皆模块）</p></li> <li><p>用于本项目用的是<code>vue-cli4</code>，可以直接在<code>vue.config.js</code>中添加以下代码</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">chainWebpack</span><span class="token punctuation">(</span><span class="token parameter">config</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  config<span class="token punctuation">.</span>optimization<span class="token punctuation">.</span><span class="token function">splitChunks</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    chunks<span class="token operator">:</span> <span class="token string">'all'</span><span class="token punctuation">,</span>
+    cacheGroups<span class="token operator">:</span> <span class="token punctuation">{</span>
+      echarts<span class="token operator">:</span> <span class="token punctuation">{</span>
+        name<span class="token operator">:</span> <span class="token string">'chunk-echarts'</span><span class="token punctuation">,</span>
+        priority<span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+        test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/]_?echarts(.*)</span><span class="token regex-delimiter">/</span></span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li><p>虽然总体积是有点缩小了，但是还是远远达不到我们的预期</p></li> <li><p>既然如此，那么我们换种思路，分析哪些是可以不需要参与打包的,在大部分管理系统中，大部分页面可能是通过像<code>element</code>这样的ui库构成的，那我们可以直接丢到cdn上，而像<code>xlsx、echarts</code>这样的，可以按需引入</p></li></ul> <p>那么我们先将echarts从项目中去除试一下</p> <div class="language-js extra-class"><pre class="language-js"><code>configureWebpack<span class="token operator">:</span> <span class="token punctuation">{</span>
+  name<span class="token operator">:</span> name<span class="token punctuation">,</span>
+  resolve<span class="token operator">:</span> <span class="token punctuation">{</span>
+    alias<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token string">'@'</span><span class="token operator">:</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">'src'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  externals<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string">'echarts'</span><span class="token operator">:</span><span class="token string">'echarts'</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><ul><li>现在看看效果
+<img src="http://ruqi-img.ruqimobility.com/pic_image/20210204062303__FL0G6C4A.png" style="width:80%;"></li> <li>可以看到打包后的文件直接比原来少了一大块，而且打包速度也快了很多（可以用插件，去跟踪打包各个模块所花费的时间，根据对比我们发现打包速度比原来快了10s多）</li> <li>现在下一步是，我们将依赖从打包后的文件中剔除了，那么开发和打包后我们所需要的依赖就需要利用cdn上引进来</li> <li>慢着~我们先回想一下，按理来说，我们直接删除依赖然后从全局引进cdn就完事了，但是，部门大佬此时提出了一个更加优秀的方案，那就是既然这个echarts并不是用的很多，那我们需要全局加载这份资源进来吗，答案当然是大可不必，那么我们需要的就是做到按需引入cdn</li> <li>实现如下：<div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>echart-js</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>https://lib.baomitu.com/echarts/4.2.1/echarts.js<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code>components<span class="token operator">:</span><span class="token punctuation">{</span>
+  <span class="token string">'echart-js'</span><span class="token operator">:</span><span class="token punctuation">{</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token parameter">createElement</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'link'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> rel<span class="token operator">:</span><span class="token string">'stylesheet'</span><span class="token punctuation">,</span> href<span class="token operator">:</span><span class="token keyword">this</span><span class="token punctuation">.</span>href <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    props<span class="token operator">:</span><span class="token punctuation">{</span>
+      href<span class="token operator">:</span><span class="token punctuation">{</span> type<span class="token operator">:</span>String<span class="token punctuation">,</span> required<span class="token operator">:</span><span class="token boolean">true</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>这确实是一种方法，不过每次都需要在页面添加这么一大段，总归是有些不优雅的，我们是不是可以直接写一个方法，只需要把cdn地址丢进去就让他自动加载呢？慢着，或许我们还可以这样，写一个公共的工具，用来加载cdn上的资源，并且我们调用这个方法后，实现按需引入这个效果</li> <li>首先先实现加载cdn资源工具，具体如下<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">loadingRes</span><span class="token punctuation">(</span><span class="token punctuation">{</span> url <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">,</span> tagType <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> script <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span>tagType<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    script<span class="token punctuation">.</span>src <span class="token operator">=</span> url<span class="token punctuation">;</span>
+    script<span class="token punctuation">.</span>id <span class="token operator">=</span> url
+    script<span class="token punctuation">.</span><span class="token function-variable function">onload</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    script<span class="token punctuation">.</span><span class="token function-variable function">onerror</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span> <span class="token function">reject</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">}</span>
+    document<span class="token punctuation">.</span><span class="token function">getElementsByTagName</span><span class="token punctuation">(</span><span class="token string">'head'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>接着我们需要实现一个函数，用来使我们在代码中获取到我们需要的模块对象<div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> <span class="token function-variable function">LoadScript</span> <span class="token operator">=</span> <span class="token keyword">async</span><span class="token punctuation">(</span><span class="token parameter">params<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> url<span class="token punctuation">,</span> module<span class="token punctuation">,</span> tagType <span class="token punctuation">}</span> <span class="token operator">=</span> params
+  <span class="token keyword">const</span> existingScript <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> cb <span class="token operator">=</span> callback <span class="token operator">||</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>existingScript<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">await</span> <span class="token function">loadingRes</span><span class="token punctuation">(</span><span class="token punctuation">{</span> url<span class="token punctuation">,</span> tagType <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> script <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'url'</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> onEnd <span class="token operator">=</span> <span class="token string">'onload'</span> <span class="token keyword">in</span> script <span class="token operator">?</span> stdOnEnd <span class="token operator">:</span> ieOnEnd
+    <span class="token function">onEnd</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">resobj</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">res</span><span class="token punctuation">(</span>resobj<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>existingScript <span class="token operator">&amp;&amp;</span> cb<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>window<span class="token punctuation">[</span>module<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">res</span><span class="token punctuation">(</span>window<span class="token punctuation">[</span>module<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span> 
+    <span class="token keyword">const</span> onEnd <span class="token operator">=</span> <span class="token string">'onload'</span> <span class="token keyword">in</span> existingScript <span class="token operator">?</span> stdOnEnd <span class="token operator">:</span> ieOnEnd
+    <span class="token function">onEnd</span><span class="token punctuation">(</span>existingScript<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">resobj</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>resobj<span class="token punctuation">)</span>
+      <span class="token function">res</span><span class="token punctuation">(</span>resobj<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">function</span> <span class="token function">stdOnEnd</span><span class="token punctuation">(</span><span class="token parameter">script</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">res<span class="token punctuation">,</span> rej</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">let</span> fn <span class="token operator">=</span> script<span class="token punctuation">.</span>onload <span class="token operator">||</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span> 
+      script<span class="token punctuation">.</span><span class="token function-variable function">onload</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span>onerror <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>onload <span class="token operator">=</span> <span class="token keyword">null</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">res</span><span class="token punctuation">(</span>window<span class="token punctuation">[</span>module<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div></li> <li>这样我们就可以实现每次只加载我们需要的资源并且不需要加入打包并且不会重复请求cdn</li> <li>现在可以来看一下具体打包后的模块
+<img src="http://ruqi-img.ruqimobility.com/pic_image/20210223015630__EJD6FTQ5.png" style="width:80%;"></li> <li>很明显XLSX和echarts模块都不在打包后的模块中了，而且整个打包后的体积也大大减少了，具体如图</li> <li>优化后打包的体积，在没有gzip压缩过的是6.11MB
+<img src="http://ruqi-img.ruqimobility.com/pic_image/20210223015630__FPPQT791.png" style="width:80%;"></li> <li>没有优化的打包体积，在没有gzip压缩过的话是8.01MB
+<img src="http://ruqi-img.ruqimobility.com/pic_image/20210223031045__135P8C3H.png" style="width:80%;"></li></ul> <p>在以上对打包过程的优化中，受影响的主要是项目中第三方库的部分，确确实实在装依赖或者打包的时候，减少一些依赖包的参与是能有效的加快编译速度和体积的。</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.e4bf8a89.js" defer></script><script src="/assets/js/2.c68f0df1.js" defer></script><script src="/assets/js/11.5acdc7ca.js" defer></script>
+  </body>
+</html>
