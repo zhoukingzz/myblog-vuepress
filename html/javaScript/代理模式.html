@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+
+    <script>
+        class Letter {
+            constructor(name) { this.name = name; }
+        }
+        // 暗恋人小明
+        let XiaoMing = {
+            name: '小明', sendLetter(target) {
+                target.receiveLetter(this.name);
+            },
+        };
+        // 代理小华
+        let xiaoHua = {
+            receiveLetter(customer) {
+                // 当然要等小红好心情时才送情书，也在送情书也才创建情书  
+                XiaoHong.listenGoodMood(() => {
+                    XiaoHong.receiveLetter(new Letter(customer + '的情书'));
+                });
+            },
+        };
+        // 心仪对象小红
+        let XiaoHong = {
+            name: '小红',
+            receiveLetter(letter) {
+                console.log(this.name + '收到：' + letter.name);
+            },
+            listenGoodMood(fn) { setTimeout(() => { fn(); }, 1000); },
+        };
+        XiaoMing.sendLetter(xiaoHua);//小红收到：小明的情书
+
+        //现在用Proxy模拟一下另一种场景:
+        //为了保护不及格的同学，课代表拿到全班成绩单后只会公示及格人的成绩。
+        //对考分有疑问的考生，复议后新分数比以前大10分才有权利去更新成绩
+        const scoreList = { 'wang': 90, 'li': 60, 'wu': 100, }
+        const yyProxy = new Proxy(scoreList, {
+            get: function (scoreList, name) {
+                if (scoreList[name] > 69) {
+                    console.log('输出成绩')          
+                    return scoreList[name]
+                } else { console.log('不及格的成绩无法公示') }
+            },
+            set: function (scoreList, name, val) {
+                if (val - scoreList[name] > 10) {
+                    console.log('修改成绩')         
+                    scoreList[name] = val
+                } else { console.log('无法修改成绩'); }
+            }
+        })
+        yyProxy['wang'] = 98 //无法修改成绩
+        yyProxy["li"] = 80 //修改成绩
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  data = [
+        { queryType: "ORDER", headers: Array(6), numbers: { a:1 }},
+        { queryType: "TURNOVER", headers: Array(5), numbers: {}},
+        { queryType: "CONVERSION", headers: Array(6), numbers: {}},
+        { queryType: "ACTIVITY", headers: Array(5), numbers: {}}
+      ]
+console.log(data.some((item) => Object.keys(item.numbers).length > 0))
+//true
+console.log(data.every((item) => Object.keys(item.numbers).length > 0))
+//false
+console.log(data.filter((item) => Object.keys(item.numbers).length > 0))
+//{ queryType: "ORDER", headers: Array(6), numbers: { a:1 }}
+</script>
+</html>

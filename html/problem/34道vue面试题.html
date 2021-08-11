@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <img src="../../img/34道vue面试题.webp" alt="">
+如何理解MVVM原理？
+提到MVVM，很多前端开发者都会想到Vue的双向绑定，然而它们并不能划等号，MVVM是一种软件架构模式，而Vue只是一种在前端层面上的实现，其实不单在Vue里，在很多Web 框架应用里都有相关的实现。MVVM模式到底是什么呢？要说到MVVM这种模式，则必须要提及另一种大多数开发者都能耳熟能详的模式，就是MVC模式。
+什么是MVC?
+<img src="../../img/mvc.webp" alt="">
+在前几年，前后端完全分离开之前，很多很火的后端框架都会说自己是支持MVC模式，像JAVA的SpringMVC、PHP的smarty、Nodejs的express和Koa，那么MVC的模式到底是什么样的？先看看下面这张经典的MVC模型图，Model（模型）、View（视图）、 Controller（控制器）相互依赖关系的三部分组成模型。认识一下这三部分具体是指什么。
+Model
+这里的Model在MVC中实际是数据模型的概念，可以把它当成从数据库里查出来后的一条数据，或者是将查询出来的元数据经过裁剪或者处理后的一个特定数据模型结构。
+View
+View是视图，是将数据内容呈现给用户肉眼的界面层，View层最终会将数据模型下的信息，渲染显示成人类能易于识别感知的部分。
+Controller
+Controller是数据模型与View之间的桥梁层，实际界面层的各种变化都要经过它来控制，而且像用户从界面提交的数据也会经过Controller的组装检查生成数据模型，然后改变数据库里的数据内容。
+MVC的使用
+像接触过MVC框架的同学就知道，如果想把数据从数据库里渲染到页面上，先要查询完数据库后，将拿到的元数据进行一些处理，一般会删掉无用的字段，或者进行多个数据模型间的数据聚合，然后再给到页面模板引擎（ejs，Thymeleaf等）进行数据组装，最后组合完成进行渲染后生成HTML格式文件供浏览器展示使用。
+像前面提到的各大支持MVC模式的Web开发框架，在前后端彻底分离之后就很少再提了。因为前端独立开发发布，实际相对原来的MVC模式是少了View这一层，这也让新的概念Restful出现在我们的视野里，很多新的框架又开始支持提供这种前端控制轻量级模式下的适配方案。
+但是前后端分离的出现后，MVC就此没有了吗？当然不是。实际对于MVC模式没有特别明确的概念，在前后端分离之后可以尝试从不同的角度去看。可以理解整个系统在原先的MVC基础上View层进行细化，把整个前端项目当成一个View层，也可以从前端视角去看，Restful接口返回的Json数据当成一个数据模型，作为MVC的Model层，而前端Javascript自身对数据的处理是Contrller层，真正的页面渲染结果是View层。
+下面以前端视角下的MVC模式中举个例子，接口返回的数据Model模型与View页面之间由Controller连接，来完成系统中的数据展示。
+<!--view-->
+<html>
+...
+ <div>
+   <span id="name"></span>
+   <div id="data"></div>
+ </div>
+...
+</html>
+<script>
+ // 生成model数据模型
+ function getDataApi() {
+   // 模拟接口返回
+   return {
+     name: 'mvc',
+     data: 'mvc 数据信息'
+  }
+}
+
+ // controller控制逻辑
+ function pageController() {
+   const result = getDataApi();
+   document.getElementById('name').innerText = `姓名：${result.name}`;
+   document.getElementById('data').innerText = result.data;
+}
+</script>
+
+
+
+
+什么是MVVM？
+<img src="../../img/mvvm.webp" alt="">
+
+随着前端对于控制逻辑的越来越轻量，MVVM模式作为MVC模式的一种补充出现了，万变不离其宗，最终的目的都是将Model里的数据展示在View视图上，而MVVM相比于MVC则将前端开发者所要控制的逻辑做到更加符合轻量级的要求。
+ViewModel
+在Model和View之间多了叫做View-Model的一层，将模型与视图做了一层绑定关系，在理想情况下，数据模型返回什么试图就应该展示什么，看看下面这个例子。
+<!--view页面-->
+<html>
+...
+ <div>
+   <span vm-bind-key="name"></span>
+   <div vm-bind-key="data"></div>
+ </div>
+...
+</html>
+<script>
+ // 生成model数据模型
+ function getDataApi() {
+   // 模拟接口返回
+   return {
+     name: 'mvc',
+     data: 'mvc 数据信息'
+  }
+}
+
+ // ViewModel控制逻辑
+ function pageViewModel() {
+   const result = getDataApi();
+   return result;
+}
+</script>
+上面作为理想情况下例子，在ViewModel引入之后，视图完全由接口返回数据驱动，由开发者所控制的逻辑非常轻量。不过这里要说明的是，在MVVM模式下，Controller控制逻辑并非就没了，像操作页面DOM响应的逻辑被SDK（如Vue的内部封装实现）统一实现了，像不操作接口返回的数据是因为服务端在数据返回给前端前已经操作好了。
+例子里pageViewModel函数的实现是非常关键的一步，如何将数据模型与页面视图绑定起来呢？在目前的前端领域里有三类实现，Angularjs的主动轮询检查新旧值变化更新视图、Vue利用ES5的Object.defineProperty的getter/setter方法绑定、backbone的发布订阅模式，从主动和被动的方式去实现了ViewModel的关系绑定，接下来主要看看Vue中的MVVM的实现。
+Vue2.0中的MVVM实现
+<img src="../../img/vue中的mvvm.webp" alt="">
+Vue2.0的MVVM实现中，对View-Model的实现本质利用的ES5的Object.defineProperty方法，当Object.defineProperty方法在给数据Model对象定义属性的时候先挂载一些方法，在这些方法里实现与界面的值绑定响应关系，当应用的属性被读取或者写入的时候便会触发这些方法，从而达到数据模型里的值发生变化时同步响应到页面上。
+Vue的响应式原理
+// html
+<body>
+ <div>
+   <span>{{name}}</span>
+   <span>{{data}}</span>
+ </div>
+<body>
+
+//js
+<script src="vue.js"></script>
+<script>
+ // 生成model数据模型
+ function getDataApi() {
+   // 模拟接口返回
+   return {
+     name: 'mvc',
+     data: 'mvc 数据信息'
+  }
+}
+ new Vue({
+   el: 'body',
+   data() {
+     return {
+       name:'',
+       data: '',
+    }
+  },
+   mounted() {
+     const result = getDataApi();
+     this.name = result.name;
+     this.data = result.data;
+  }
+})
+</script>
+当new Vue在实例化的时候，首先将data方法里返回的对象属性都挂载上setter方法，而setter方法里将页面上的属性进行绑定，当页面加载时，浏览器提供的DOMContentloaded事件触发后，调用mounted挂载函数，开始获取接口数据，获取完成后给data里属性赋值，赋值的时候触发前面挂载好的setter方法，从而引起页面的联动，达到响应式效果。
+简易实现Object.defineProperty下的绑定原理
+// html
+<body>
+ <span id="name"></span>
+<body>
+<script>
+var data = {
+    name: ''
+ };
+ // Data Bindings
+ Object.defineProperty(data, 'name', {
+   get: function(){},
+   set: function(newValue){ // 页面响应处理
+     document.getElementById('name').innerText = newValue
+     data.name = value
+  },
+   enumerable: true,
+   configurable: true
+});
+ // 页面DOM listener
+ document.getElementById('name').onchange = function(e) {
+   data.name = e.target.value;
+}
+</script>
+
+实现Vue3.0版本的MVVM
+这里采用Vue3.0最新的实现方式，用Proxy和Reflect来替代Object.definePropertypry的方式。至于Vue3.0为何不再采用2.0中Object.defineProperty的原因，我会在后续详写，先来介绍一下ES6里的Proxy与Reflect。
+
+Proxy
+Proxy是ES6里的新构造函数，它的作用就是代理，简单理解为有一个对象，不想完全对外暴露出去，想做一层在原对象操作前的拦截、检查、代理，这时候你就要考虑Proxy了。
+const myObj = {
+ _id: '我是myObj的ID',
+ name: 'mvvm',
+ age: 25
+}
+
+const myProxy = new Proxy(myObj, {
+ get(target, propKey) {
+   if (propKey === 'age') {
+     console.log('年龄很私密，禁止访问');
+     return '*';
+  }
+   return target[propKey];
+},
+ set(target, propKey, value, receiver) {
+   if (propKey === '_id') {
+     console.log('id无权修改');
+     return;
+  }
+   target[propKey] = value + (receiver.time || '');
+},
+ // setPrototypeOf(target, proto) {},
+ // apply(target, object, args) {},
+ // construct(target, args) {},
+ // defineProperty(target, propKey, propDesc) {},
+ // deleteProperty(target, propKey) {},
+ // has(target, propKey) {},
+ // ownKeys(target) {},
+ // isExtensible(target) {},
+ // preventExtensions(target) {},
+ // getOwnPropertyDescriptor(target, propKey) {},
+ // getPrototypeOf(target) {},
+});
+
+myProxy._id = 34;
+// id无权修改
+console.log(`age is: ${myProxy.age}`);
+//年龄很私密，禁止访问
+// age is: *
+myProxy.name = 'my name is Proxy';
+console.log(myProxy);
+// { _id: '我是myObj的ID', name: 'my name is Proxy', age: 25}
+
+const newObj = {
+ time: ` [${new Date()}]`,
+};
+// 原对象原型链赋值
+Object.setPrototypeOf(myProxy, newObj);
+myProxy.name = 'my name is newObj';
+console.log(myProxy.name);
+//my name is newObj [Thu Mar 19 2020 18:33:22 GMT+0800 (GMT+08:00)]
+Reflect
+<img src="../../img/Reflect.webp" alt="">
+Reflect是ES6里的新的对象，非构造函数，不能用new操作符。可以把它跟Math类比，Math是处理JS中数学问题的方法函数集合，Reflect是JS中对象操作方法函数集合，它暴露出来的方法与Object构造函数所带的静态方法大部分重合，实际功能也类似，Reflect的出现一部分原因是想让开发者不直接使用Object这一类语言层面上的方法，还有一部分原因也是为了完善一些功能。Reflect提供的方法还有一个特点，完全与Proxy构造函数里Hander参数对象中的钩子属性一一对应。
+
+看下面一个改变对象原型的例子。
+const myObj = {
+ _id: '我是myObj的ID',
+ name: 'mvvm',
+ age: 25
+}
+
+const myProxy = new Proxy(myObj, {
+ get(target, propKey) {
+   return target[propKey];
+},
+ set(target, propKey, value, receiver) {
+   target[propKey] = value + (receiver.time || '');
+},
+ setPrototypeOf(target, proto) {
+   if (proto.status === 'enable') {
+     Reflect.setPrototypeOf(target, proto);
+     return true;
+  }
+   return false;
+},
+});
+
+
+const newObj = {
+ time: ` [${new Date()}]`,
+ status: 'sable'
+};
+// 原对象原型链赋值
+const result1 = Reflect.setPrototypeOf(myProxy, {
+ time: ` [${new Date()}]`,
+ status: 'disable'
+});
+myProxy.name = 'first set name'
+console.log(result1)  //false
+console.log(myProxy.name);  //first set name
+
+// 原对象原型链赋值
+const result2 = Reflect.setPrototypeOf(myProxy, {
+ time: ` [${new Date()}]`,
+ status: 'enable'
+});
+
+myProxy.name = 'second set name'
+console.log(result1)  //true
+console.log(myProxy.name); //second set name [Thu Mar 19 2020 19:43:59 GMT+0800 (GMT+08:00)]
+
+
+/*当执行到这里时直接报错了*/
+// 原对象原型链赋值
+Object.setPrototypeOf(myProxy, {
+ time: ` [${new Date()}]`,
+ status: 'disable'
+});
+myProxy.name = 'third set name'
+console.log(myProxy.name);
+解释一下上面的这段代码，通过Reflec.setPrototypeOf方法修改原对象原型时，必须经过Proxy里hander的挂载的setPrototypeOf挂载函数，在挂载函数里进行条件proto.status是否是enable筛选后，再决定是否真正修改原对象myObj的原型，最后返回true或者false来告知外部原型是否修改成功。
+
+
+
+这里还有一个关键点，就是在代码执行到原有的Object.setPrototypeOf方法时，程序则直接抛错，这其实也是Reflect出现的一个原因，即使现在ES5里的Object有同样的功能，但是Reflect实现的更友好，更适合开发者开发应用程序。
+
+实现MVVM
+接下来使用上面的Proxy和Reflect来实现MVVM，这里将data和Proxy输出到全局Window下，方便我们模拟数据双向联动的效果。
+<!DOCTYPE html>
+<html>
+ <div>
+   name: <input id="name" />
+   age: <input id="age" />
+ </div>
+</html>
+<script>
+// 与页面绑定
+const data = {
+ name: '',
+ age: 0
+}
+
+// 暴露到外部，便于查看效果
+window.data = data;
+window.myProxy = new Proxy(data, {
+ set(target, propKey, value) {
+   // 改变数据Model时修改页面
+   if (propKey === 'name') {
+     document.getElementById('name').value = value;
+  } else if (propKey === 'age') {
+     document.getElementById('age').value = value;
+  }
+   Reflect.set(...arguments);
+},
+});
+
+// 页面变化改变Model内数据
+document.getElementById('name').onchange = function(e) {
+ Reflect.set(data, 'name', e.target.value);
+}
+document.getElementById('age').onchange = function(e) {
+ Reflect.set(data, 'age', e.target.value);
+}
+</script>
+
+先打印了data，然后模拟有异步数据过来，手动修改data里的数据window.myProxy.age=25，这时候页面上的age联动变化为25，再次打印了查看data。接下来在页面上手动输入name，输入完成后触发输入框的onchange事件后，再次查看data，此时model里的数据已经变化为最新的与页面保持一致的值。
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  let code = 0
+    if (true) {
+      console.log(1)
+        let {code}  = async function(){
+        await fetch('https://cnodejs.org/api/v1/topic/5433d5e4e737cbe96dcef312').then((res, req) => {
+          console.log(2)
+            return res
+          }).then((res, req) => {
+            console.log(3)
+            return {code:1}
+          })
+        }()
+        console.log(code)
+      }
+    console.log(code)
+      // 1 undefined 0 2 3 (2 3在一秒后才打印)
+</script>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+```js
+//前端
+//上传头像
+fileChange = () => {
+    let picOM = this._file.files[0]; //本地读取的第一张图片
+    if (!picOM) return;    //如果没有读取，就返回
+    let fileReade = new FileReader();
+    fileReade.readAsDataURL(picOM);    //读取图片，图片读取的形式为base64
+    fileReade.onload = ev => {
+        var imgData = ev.target.result;   //这个就是图片的base64
+        this.setState({
+            img: imgData    //本地显示
+        })
+        $axios.post('http://localhost:3000/uploadHeadPhoto',
+            qs.stringify({
+                img: this.state.img
+            })
+        ).then(({ data }) => {
+            console.log(data);
+        })
+    }
+}
+```
+
+```html
+<div>
+<input type="file" accept="image/*" className='file' style={{ display: 'none' }}
+                        ref={x => this._file = x} onChange={this.fileChange} />
+<img src={this.state.img ? this.state.img : 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=4124065164,463046093&fm=26&gp=0.jpg'}
+                        onClick={ev => {
+                            this._file.click();
+                        }} alt="" />
+</div>
+```
+
+```js
+//后端
+//头像上传
+router.post('/uploadHeadPhoto', async function (req, res, next) {
+  res.append('Access-Control-Allow-Origin', '*');   //允许跨域
+  //获取url中的请求参数
+  var query = req.query
+  var params = req.body   //请求体中的数据
+  var img = params.img;    //图片base64
+  var path = writePhoto(img);   //将图片base64转为jpg
+  console.log('path' + path);
+  // await update('userInfo', { 'userName': '123' }, { $set: { 'headPhoto': path } });
+  await update('userInfo', { 'userName': '123' }, { $set: { 'headPhoto': img } });
+  var data = { code: 0, path: path, img: img }
+  res.json(data);
+});
+
+//base64转图片
+function writePhoto(imgdata) {
+  //路径需要注意
+  var path = '../img/' + Date.now() + '.png';//文件路径
+  var base64 = imgdata.replace(/^data:image\/\w+;base64,/, ""); //去掉前面不属于图片本身的部分
+  var dataBuffer = new Buffer(base64, 'base64');  //把base64码转成buffer对象，
+  fs.writeFile(path, dataBuffer, function (err) {//用fs写入文件
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('写入成功！');
+    }
+  })
+  return "../" + path;    //返回路径
+}
+```
+
+</script>
+</html>

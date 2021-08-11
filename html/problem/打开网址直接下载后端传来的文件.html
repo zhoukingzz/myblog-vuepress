@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  import FileSaver from "file-saver";
+import axios from 'axios'
+// import { Loading } from 'element-ui'
+export function saveFile(url, filename, loadingClass) {
+  axios.get(url, { responseType:'blob' }).then(response => {
+    // console.log(response)
+    let blob = new Blob([response.data]);
+    let fileName = filename
+    if (response.headers['content-Type']) {
+      fileName = filename.split('.')[0] + response.headers['content-disposition'].split('/')[1]
+    }
+    if (response.headers['content-disposition']) {
+      fileName = decodeURIComponent(response.headers['content-disposition'].split('filename=')[1])
+    }
+    // let loadingInstance = Loading.service({ target:loadingClass })
+    FileSaver.saveAs(blob, fileName)
+  })
+}
+</script>
+</html>
