@@ -3,7 +3,7 @@ home: true
 heroImage: /logo.png
 actionText: More →
 actionLink: /engineering/
-footer: MIT Licensed | Copyright © 2021-present zhoukingzz
+footer: MIT Licensed | Copyright © 2021-present zhoukingzz | 备案号：粤ICP备2021055223号
 ---
 ### hi there 👋
 
