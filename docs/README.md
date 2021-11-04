@@ -2,8 +2,8 @@
 home: true
 heroImage: /logo.png
 actionText: More →
-actionLink: /engineering/
-footer: MIT Licensed | Copyright © 2021-present zhoukingzz | 备案号：粤ICP备2021055223号
+actionLink: /JS/
+---
 ---
 ### hi there 👋
 
@@ -22,7 +22,11 @@ footer: MIT Licensed | Copyright © 2021-present zhoukingzz | 备案号：粤ICP
   
 - ⚙️ I also use and work:  ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=plastic&logo=html5&logoColor=white)
   ![CSS3](https://img.shields.io/badge/-CSS3-1572B6?style=plastic&logo=css3)
+---
+MIT Licensed | Copyright © 2021-present zhoukingzz | <a href="https://beian.miit.gov.cn">备案号：粤ICP备2021055223号</a>
 
+<!-- footer: MIT Licensed | Copyright © 2021-present zhoukingzz | 备案号：粤ICP备2021055223号 -->
+<!-- MIT Licensed | Copyright © 2021-present zhoukingzz | [备案号：粤ICP备2021055223号](https://beian.miit.gov.cn) -->
 
 <!--
 **zhoukingzz/zhoukingzz** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
